@@ -1,6 +1,6 @@
 # Build artifacts
 bin/
-i9c
+/i9c
 dist/
 *.exe
 *.test
