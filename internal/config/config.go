@@ -71,11 +71,12 @@ type TerraformConfig struct {
 }
 
 func DefaultConfig() *Config {
+	root := defaultRoot()
 	return &Config{
 		IACDir:   "",
 		Provider: "aws",
 		Paths: PathsConfig{
-			Root: ".i9c",
+			Root: root,
 		},
 		AWS: AWSConfig{
 			Auth:                     "profile",
@@ -183,7 +184,7 @@ func (c *Config) Validate() error {
 func (c *Config) EnsureLocalDirs() error {
 	root := c.Paths.Root
 	if root == "" {
-		root = ".i9c"
+		root = defaultRoot()
 		c.Paths.Root = root
 	}
 	for _, dir := range []string{
@@ -197,4 +198,12 @@ func (c *Config) EnsureLocalDirs() error {
 		}
 	}
 	return nil
+}
+
+func defaultRoot() string {
+	home, err := os.UserHomeDir()
+	if err != nil || home == "" {
+		return ".i9c"
+	}
+	return filepath.Join(home, ".i9c")
 }

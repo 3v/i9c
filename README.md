@@ -72,7 +72,7 @@ If both `.tf` and `.tofu` files exist, drift detection prioritizes OpenTofu (`to
 
 ## Configuration
 
-Create `./.i9c/config.yaml`:
+Create `~/.i9c/config.yaml`:
 
 ```yaml
 iac_dir: ./infrastructure

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"i9c/internal/app"
@@ -19,6 +20,7 @@ var (
 )
 
 func main() {
+	defaultCfgPath := filepath.Join(defaultRoot(), "config.yaml")
 	rootCmd := &cobra.Command{
 		Use:   "i9c",
 		Short: "Infrastructure-as-Code Advisor",
@@ -26,7 +28,7 @@ func main() {
 		RunE:  run,
 	}
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default ./.i9c/config.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default %s)", defaultCfgPath))
 	rootCmd.PersistentFlags().StringVar(&awsProfile, "aws-profile", "", "narrow to a single AWS profile")
 	rootCmd.PersistentFlags().StringVar(&awsRegion, "aws-region", "", "override AWS region for all profiles")
 	rootCmd.PersistentFlags().StringVar(&iacDir, "iac-dir", "", "path to IaC directory to monitor")
@@ -35,6 +37,14 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+func defaultRoot() string {
+	home, err := os.UserHomeDir()
+	if err != nil || home == "" {
+		return ".i9c"
+	}
+	return filepath.Join(home, ".i9c")
 }
 
 func run(cmd *cobra.Command, args []string) error {
