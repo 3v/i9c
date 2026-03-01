@@ -55,9 +55,9 @@ Required setup:
 1. Create GitHub secret in `3v/i9c` repo:
    - `HOMEBREW_TAP_GITHUB_TOKEN`
 2. The token must have permission to push to `3v/homebrew-i9c`.
-3. Ensure tap repo has `Formula/i9c.rb` path and default branch `main`.
+3. Ensure tap repo has `Casks/i9c.rb` path and default branch `main`.
 
-After that, each `v*` release tag updates Homebrew formula automatically.
+After that, each `v*` release tag updates Homebrew cask automatically.
 
 ## Prerequisites
 
