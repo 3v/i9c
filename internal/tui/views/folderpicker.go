@@ -169,7 +169,7 @@ func (m *FolderPickerModel) handleBrowserKey(msg tea.KeyMsg) tea.Cmd {
 		if m.cursor > 0 {
 			m.cursor--
 		}
-	case "enter":
+	case "enter", "o", "right":
 		if m.cursor < len(m.entries) {
 			e := m.entries[m.cursor]
 			if e.isDir {
@@ -183,14 +183,14 @@ func (m *FolderPickerModel) handleBrowserKey(msg tea.KeyMsg) tea.Cmd {
 				m.input.SetValue(m.browseDir)
 			}
 		}
+	case "s":
+		return func() tea.Msg { return FolderSelectedMsg{Path: m.browseDir} }
 	case "backspace", "h":
 		parent := filepath.Dir(m.browseDir)
 		if parent != m.browseDir {
 			m.loadDir(parent)
 			m.input.SetValue(m.browseDir)
 		}
-	case "s":
-		return func() tea.Msg { return FolderSelectedMsg{Path: m.browseDir} }
 	case "G":
 		m.cursor = max(0, len(m.entries)-1)
 	case "g":
@@ -218,7 +218,7 @@ func (m *FolderPickerModel) View() string {
 			lipgloss.NewStyle().Foreground(theme.TextDim).Render("  [tab] switch to browser  [enter] select  [esc] cancel")
 	} else {
 		modeLine = lipgloss.NewStyle().Foreground(theme.Primary).Render("[browser mode]") +
-			lipgloss.NewStyle().Foreground(theme.TextDim).Render("  [tab] switch to input  [s] select current dir  [esc] cancel")
+			lipgloss.NewStyle().Foreground(theme.TextDim).Render("  [enter] open highlighted dir  [s] select current dir  [tab] switch to input  [esc] cancel")
 	}
 
 	currentDir := theme.HelpKeyStyle.Render("Browsing: ") +
