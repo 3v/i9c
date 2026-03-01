@@ -1,0 +1,86 @@
+version: "1.0"
+framework: "cis"
+benchmark:
+  provider: "aws"
+  release: "1.5.0"
+metadata:
+  generated_by: "i9c"
+  mode_existing: "advisory"
+  mode_new_code: "enforce-on-write"
+  default_severity: "medium"
+defaults:
+  tags:
+    ManagedBy: "i9c"
+    SecurityBaseline: "CIS"
+rules:
+  - id: "CIS-2.1.1"
+    title: "S3 buckets should block public access"
+    severity: "high"
+    resource_types:
+      - "aws_s3_bucket"
+      - "aws_s3_bucket_public_access_block"
+    check:
+      all:
+        - path: "public_access_block.block_public_acls"
+          equals: true
+        - path: "public_access_block.block_public_policy"
+          equals: true
+        - path: "public_access_block.ignore_public_acls"
+          equals: true
+        - path: "public_access_block.restrict_public_buckets"
+          equals: true
+    guidance: "Enable all S3 public access block controls."
+    fix_template: |
+      resource "aws_s3_bucket_public_access_block" "this" {
+        bucket                  = aws_s3_bucket.this.id
+        block_public_acls       = true
+        block_public_policy     = true
+        ignore_public_acls      = true
+        restrict_public_buckets = true
+      }
+
+  - id: "CIS-3.10"
+    title: "RDS storage should be encrypted"
+    severity: "high"
+    resource_types:
+      - "aws_db_instance"
+      - "aws_rds_cluster"
+    check:
+      all:
+        - path: "storage_encrypted"
+          equals: true
+    guidance: "Set storage_encrypted = true and use KMS key where applicable."
+
+  - id: "CIS-4.1"
+    title: "Security groups should not allow 0.0.0.0/0 on admin ports"
+    severity: "critical"
+    resource_types:
+      - "aws_security_group"
+      - "aws_vpc_security_group_ingress_rule"
+    check:
+      deny:
+        - when:
+            all:
+              - path: "cidr_blocks"
+                contains: "0.0.0.0/0"
+              - path: "from_port"
+                in: [22, 3389]
+    guidance: "Restrict SSH/RDP to approved private CIDRs."
+
+  - id: "CIS-5.2"
+    title: "CloudTrail should be enabled in all regions"
+    severity: "high"
+    resource_types:
+      - "aws_cloudtrail"
+    check:
+      all:
+        - path: "is_multi_region_trail"
+          equals: true
+        - path: "enable_log_file_validation"
+          equals: true
+    guidance: "Use a multi-region CloudTrail trail with log file validation."
+
+exceptions:
+  require_justification: true
+  allow_expiry: true
+  max_days: 30

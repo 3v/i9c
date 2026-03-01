@@ -1,0 +1,67 @@
+version: "1.0"
+framework: "cis"
+benchmark:
+  provider: "aws"
+  product: "eks"
+  release: "1.8.0"
+notes:
+  - "Sample policies generated from normalized CIS EKS guidance themes (control plane logging and secrets KMS encryption)."
+  - "Use as starter policy pack; map exact CIS control IDs during full parser integration."
+policies:
+  - id: "EKS-CIS-SAMPLE-LOGGING"
+    title: "Enable EKS control plane audit logging"
+    severity: "high"
+    applies_to:
+      - "aws_eks_cluster"
+    rationale: "Control plane audit logging improves detection and investigation of suspicious API activity."
+    check:
+      type: "all_of"
+      conditions:
+        - path: "enabled_cluster_log_types"
+          contains: "api"
+        - path: "enabled_cluster_log_types"
+          contains: "audit"
+        - path: "enabled_cluster_log_types"
+          contains: "authenticator"
+    remediation_template: |
+      resource "aws_eks_cluster" "this" {
+        name = var.cluster_name
+        role_arn = var.cluster_role_arn
+        vpc_config {
+          subnet_ids = var.subnet_ids
+        }
+        enabled_cluster_log_types = [
+          "api",
+          "audit",
+          "authenticator",
+        ]
+      }
+
+  - id: "EKS-CIS-SAMPLE-SECRETS-KMS"
+    title: "Encrypt Kubernetes secrets with AWS KMS"
+    severity: "critical"
+    applies_to:
+      - "aws_eks_cluster"
+    rationale: "Envelope encryption for Kubernetes secrets reduces plaintext exposure risk in etcd."
+    check:
+      type: "all_of"
+      conditions:
+        - path: "encryption_config[0].provider[0].key_arn"
+          exists: true
+        - path: "encryption_config[0].resources"
+          contains: "secrets"
+    remediation_template: |
+      resource "aws_eks_cluster" "this" {
+        name = var.cluster_name
+        role_arn = var.cluster_role_arn
+        vpc_config {
+          subnet_ids = var.subnet_ids
+        }
+
+        encryption_config {
+          provider {
+            key_arn = aws_kms_key.eks_secrets.arn
+          }
+          resources = ["secrets"]
+        }
+      }

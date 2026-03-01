@@ -1,0 +1,21 @@
+# Build artifacts
+bin/
+i9c
+*.exe
+*.test
+*.out
+*.log
+*.tmp
+
+# Local app state/runtime data
+.i9c/
+
+# Go workspace/cache artifacts
+coverage.out
+cover.out
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/
+.cursor/
