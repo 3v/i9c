@@ -8,7 +8,7 @@ before:
 
 builds:
   - id: i9c
-    main: ./cmd/i9c
+    main: ./cmd/i9c/main.go
     binary: i9c
     env:
       - CGO_ENABLED=0
