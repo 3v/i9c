@@ -1020,10 +1020,17 @@ func (a *App) listenDirChanges() {
 		a.toolExecutor.IACDir = newDir
 		a.autoDetectBinary()
 		a.logf(ilog.ChannelApp, "IaC directory changed to: %s", newDir)
+		a.logStartupPrerequisites()
 		_ = a.stateStore.Save(&state.SessionState{
 			LastProfile: a.clientManager.ActiveProfile(),
 			LastIACDir:  newDir,
 		})
+		// Rebind Codex app-server thread cwd to the newly selected IaC directory.
+		if a.cfg.LLM.Provider == "codex" {
+			if err := a.applyLLMMode(a.cfg.LLM); err != nil {
+				a.logf(ilog.ChannelAgent, "failed to rebind codex cwd after dir change: %v", err)
+			}
+		}
 		go a.startWatcher()
 		ctx := context.Background()
 		go a.refreshDrift(ctx)
