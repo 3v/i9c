@@ -4,7 +4,7 @@ VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev
 LDFLAGS := -s -w -X main.version=$(VERSION)
 GOCACHE_DIR := $(PWD)/.i9c/cache/go-build
 
-.PHONY: build run run-debug vet test regression smoke clean
+.PHONY: build run run-debug vet test regression smoke release-check release-snapshot clean
 
 build:
 	GOCACHE=$(GOCACHE_DIR) go build -ldflags "$(LDFLAGS)" -o $(BUILD_DIR)/$(APP_NAME) ./cmd/i9c/
@@ -30,6 +30,14 @@ smoke:
 	@echo "Running deterministic smoke checks"
 	GOCACHE=$(GOCACHE_DIR) go test -run TestTryStartDriftRunDebounce ./internal/app
 	GOCACHE=$(GOCACHE_DIR) go test -run TestDiscoverFallsBackToSecondary ./internal/mcp
+
+release-check:
+	@command -v goreleaser >/dev/null 2>&1 || (echo "goreleaser not found. Install from https://goreleaser.com/install/"; exit 1)
+	GOCACHE=$(GOCACHE_DIR) goreleaser check
+
+release-snapshot:
+	@command -v goreleaser >/dev/null 2>&1 || (echo "goreleaser not found. Install from https://goreleaser.com/install/"; exit 1)
+	GOCACHE=$(GOCACHE_DIR) goreleaser release --snapshot --clean
 
 clean:
 	rm -rf $(BUILD_DIR)

@@ -31,6 +31,22 @@ go build -o i9c ./cmd/i9c/
 ./i9c
 ```
 
+## Binary Release
+
+This repo is configured to publish binaries with GoReleaser.
+
+- Local checks:
+  - `make release-check`
+  - `make release-snapshot`
+- GitHub release:
+  1. Push a semver tag: `git tag v0.1.0 && git push origin v0.1.0`
+  2. GitHub Actions workflow `release` builds and publishes archives/checksums.
+
+Published targets:
+- macOS: `darwin/amd64`, `darwin/arm64`
+- Linux: `linux/amd64`, `linux/arm64`
+- Windows: `windows/amd64`, `windows/arm64`
+
 ## Prerequisites
 
 - `aws` CLI (required for profile auth, SSO login, and profile/session checks)
