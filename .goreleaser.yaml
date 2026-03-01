@@ -41,3 +41,22 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+brews:
+  - name: i9c
+    directory: Formula
+    homepage: "https://github.com/3v/i9c"
+    description: "Infrastructure-as-Code Advisor"
+    license: "MIT"
+    repository:
+      owner: 3v
+      name: homebrew-i9c
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: i9c release bot
+      email: bot@i9c.dev
+    install: |
+      bin.install "i9c"
+    test: |
+      system "#{bin}/i9c", "--help"

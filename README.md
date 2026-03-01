@@ -47,6 +47,18 @@ Published targets:
 - Linux: `linux/amd64`, `linux/arm64`
 - Windows: `windows/amd64`, `windows/arm64`
 
+### Homebrew Auto-Update
+
+GoReleaser is configured to update the tap repo `3v/homebrew-i9c` on each release tag.
+
+Required setup:
+1. Create GitHub secret in `3v/i9c` repo:
+   - `HOMEBREW_TAP_GITHUB_TOKEN`
+2. The token must have permission to push to `3v/homebrew-i9c`.
+3. Ensure tap repo has `Formula/i9c.rb` path and default branch `main`.
+
+After that, each `v*` release tag updates Homebrew formula automatically.
+
 ## Prerequisites
 
 - `aws` CLI (required for profile auth, SSO login, and profile/session checks)
